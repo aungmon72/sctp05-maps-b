@@ -16,12 +16,10 @@ async function main() {
 
             // display the markers
             const locations = await searchPlaces(center.lat, center.lng, searchTerms);
-            displaySearchMarkers(locations.results, searchLayerGroup);
 
-
-            // show the search results as a list
+            // display the list of results and the markers
             const resultElement = document.querySelector("#search-results");
-            displaySearchResults(locations.results, resultElement, singaporeMap);
+           displaySearch(locations.results, searchLayerGroup, resultElement, singaporeMap);
 
         })
 

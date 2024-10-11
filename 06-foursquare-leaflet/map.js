@@ -12,35 +12,45 @@ function initMap(canvasElementId, centerLatLng, zoomLevel = 13) {
     return map;
 }
 
-function displaySearchMarkers(locations, layerGroup) {
-    // remove all existing results from the search layer group
+function displaySearch(locations, layerGroup, resultElement, map) {
     layerGroup.clearLayers();
+    resultElement.innerHTML = "";
     for (let result of locations) {
-        const latLng = [result.geocodes.main.latitude, result.geocodes.main.longitude];
-        const marker = L.marker(latLng);
-        marker.bindPopup(function(){
-            return `
+        const marker = displaySearchMarker(result, layerGroup);
+        displaySearchResult(result, resultElement, map, marker);
+    }
+}
+
+function displaySearchMarker(result, layerGroup) {
+    // remove all existing results from the search layer group
+    const latLng = [result.geocodes.main.latitude, result.geocodes.main.longitude];
+    const marker = L.marker(latLng);
+    marker.bindPopup(function () {
+        return `
                 <h1>${result.name}</h1>
                 <ul>
                     <li>Address: ${result.location.formatted_address}</li>
                     <li>Opened Now? ${result.closed_bucket}</li>
                 </ul>
             `
-        })
-        marker.addTo(layerGroup);
-    }
+    })
+    marker.addTo(layerGroup);
+    return marker;
+
 }
 
-function displaySearchResults(locations, resultElement, map) {
-    resultElement.innerHTML = "";
-    for (let result of locations) {
+function displaySearchResult(result, resultElement, map, marker) {
         let divElement = document.createElement("div");
         divElement.className = "result"; // <div class="result">
         divElement.innerHTML = `${result.name}`;
         resultElement.appendChild(divElement);
-        divElement.addEventListener("click", function(){
+        divElement.addEventListener("click", function () {
             const latLng = [result.geocodes.main.latitude, result.geocodes.main.longitude];
-            map.flyTo(latLng, 18);
+            let r = map.flyTo(latLng, 18);
+            map.on("zoomend", function(){
+                marker.openPopup();
+            })
+       
         })
-    }
+   
 }
